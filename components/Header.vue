@@ -31,7 +31,6 @@ export default {};
     display: flex;
     li {
       font-size: 16px;
-      font-family: "STZhongsong";
       margin: 0 10px;
       padding: 0 20px;
       cursor: pointer;
