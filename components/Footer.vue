@@ -45,8 +45,6 @@ export default {};
 
 <style lang="less" scoped>
 .footer {
-  position: absolute;
-  bottom: 0;
   width: 100%;
   background-color: #333333;
   padding: 30px 150px;
@@ -88,7 +86,7 @@ export default {};
   }
   .bottom {
     text-align: center;
-    line-height: 150px;
+    line-height: 120px;
   }
 }
 </style>

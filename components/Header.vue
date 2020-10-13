@@ -1,18 +1,22 @@
 <template>
   <div class="header">
     <img src="../static/logo.jpg" alt="" />
-    <ul class="nav">
-      <li class="active">首页</li>
-      <li>旅游攻略</li>
-      <li>酒店</li>
-      <li>国内机票</li>
-    </ul>
-    <div class="loginPage">登录/注册</div>
+    <div class="nav">
+      <nuxt-link to="/">首页</nuxt-link>
+      <nuxt-link to="/article">旅游攻略</nuxt-link>
+      <nuxt-link to="/hotel">酒店</nuxt-link>
+      <nuxt-link to="/airTicket">国内机票</nuxt-link>
+    </div>
+    <div class="loginPage" @click="$router.push('/user/login')">登录/注册</div>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {};
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -29,7 +33,7 @@ export default {};
   .nav {
     flex: 1;
     display: flex;
-    li {
+    a {
       font-size: 16px;
       margin: 0 10px;
       padding: 0 20px;
@@ -39,7 +43,7 @@ export default {};
         height: 60px;
       }
     }
-    .active {
+    .nuxt-link-exact-active {
       background-color: #409eff;
       color: #fff;
     }
