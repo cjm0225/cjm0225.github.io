@@ -7,7 +7,7 @@
       <nuxt-link to="/hotel">酒店</nuxt-link>
       <nuxt-link to="/airTicket">国内机票</nuxt-link>
     </div>
-    <div class="loginPage" @click="$router.push('/user/login')">登录/注册</div>
+    <div class="loginPage" @click="$router.push('/user')">登录/注册</div>
   </div>
 </template>
 

@@ -74,6 +74,17 @@ export default {
       },
     },
   },
+  created() {
+    this.$axios({
+      url: "scenics/banners",
+    })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((response) => {
+        console.log(response);
+      });
+  },
   methods: {
     activeNav(index, placeholder, url) {
       this.acriveIndex = index;
