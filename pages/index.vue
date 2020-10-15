@@ -1,8 +1,11 @@
 <template>
   <div class="page">
     <el-carousel :interval="5000" arrow="always" height="759px">
-      <el-carousel-item v-for="(url, index) of urls" :key="index">
-        <el-image :src="url" fit="fit"></el-image>
+      <el-carousel-item v-for="(item, index) of urls" :key="index">
+        <el-image
+          :src="$axios.defaults.baseURL + item.url"
+          fit="fit"
+        ></el-image>
       </el-carousel-item>
     </el-carousel>
     <div class="wrapper">
@@ -37,33 +40,29 @@
 export default {
   data() {
     return {
-      urls: [
-        "http://157.122.54.189:9095/assets/images/th01.jfif",
-        "http://157.122.54.189:9095/assets/images/th02.jfif",
-        "http://157.122.54.189:9095/assets/images/th03.jfif",
-      ],
+      urls: [],
       titleList: [
         {
           title: "攻略",
           placeholder: "请输入城市名称",
-          url: "/article?cityName=",
+          url: "article",
           city: "",
         },
         {
           title: "酒店",
           placeholder: "请输入城市搜索酒店",
-          url: "/hotel?city=",
+          url: "hotel",
         },
         {
           title: "机票",
           placeholder: "机票",
-          url: "/airTicket",
+          url: "airTicket",
         },
       ],
       acriveIndex: 0,
       placeholder: "攻略",
       cityName: "",
-      url: "/article?cityName=",
+      url: "article",
     };
   },
   // 因为autofoucs只在网页第一次进来才会聚焦,点击导航按钮后,再回来就不会聚焦
@@ -79,7 +78,7 @@ export default {
       url: "scenics/banners",
     })
       .then((response) => {
-        console.log(response);
+        this.urls = response.data.data;
       })
       .catch((response) => {
         console.log(response);
@@ -93,7 +92,7 @@ export default {
       // 自定义指令聚焦好像只对第一个输入框生效,为了用户体验,每次点击都会聚焦
       this.$refs.input.focus();
       // 如果是用户点击了机票,不需要在此页面输入信息,直接跳转
-      if (url === "/airTicket") {
+      if (url === "airTicket") {
         this.$router.push(url);
       }
     },
@@ -102,7 +101,13 @@ export default {
         this.$message.error("请输入需要搜索的信息");
         return;
       }
-      this.$router.push(this.url + this.cityName);
+      // this.$router.push(this.url + this.cityName);
+      this.$router.push({
+        path: this.url,
+        query: {
+          cityname: this.cityName,
+        },
+      });
     },
   },
 };

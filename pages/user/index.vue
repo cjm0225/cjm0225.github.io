@@ -50,7 +50,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url("http://157.122.54.189:9095/assets/images/th03.jfif");
+  background-image: url("http://127.0.0.1:1337/assets/images/th03.jfif");
   height: 752px;
 
   .page {

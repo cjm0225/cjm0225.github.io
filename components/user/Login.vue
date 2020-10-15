@@ -12,8 +12,7 @@
 
       <el-form-item prop="password">
         <el-input
-          type="password
-          "
+          type="password"
           v-model="form.password"
           placeholder="请输入密码"
           @focus="clearValidate('password')"
@@ -34,8 +33,8 @@ export default {
     return {
       showLogin: true,
       form: {
-        username: "",
-        password: "",
+        username: "13800138000",
+        password: "123456",
       },
       rules: {
         username: [
@@ -58,7 +57,8 @@ export default {
           },
           {
             // 密码正则:至少包含 数字和英文，长度6-20
-            pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/,
+            // pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,20}$/,
+            pattern: /^\d{6,12}$/,
             message: "请输入正确的密码",
             trigger: "blur",
           },
@@ -67,8 +67,32 @@ export default {
     };
   },
   methods: {
-    submitForm() {},
-    resetForm() {},
+    submitForm() {
+      this.$refs.LoginForm.validate()
+        .then(() => {
+          this.$axios({
+            method: "post",
+            url: "accounts/login",
+            data: this.form,
+          })
+            .then((response) => {
+              if (response.status === 200) {
+                this.$message.success("登录成功");
+                this.$store.commit("user/setUserInfo", response.data);
+                this.$router.push("/");
+              }
+            })
+            .catch((response) => {
+              this.$message.error(response.response.data.message);
+            });
+        })
+        .catch(() => {
+          this.$message.error("填写的格式错误,请认真检查格式再重新填写");
+        });
+    },
+    resetForm() {
+      this.$refs.LoginForm.resetFields();
+    },
     clearValidate(propName) {
       this.$refs.LoginForm.clearValidate(propName);
     },
