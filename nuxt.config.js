@@ -8,7 +8,8 @@ export default {
       { hid: 'description', name: 'description', content: '这是description' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', type: 'text/css', href: '//at.alicdn.com/t/font_2133301_oihumfbbm3.css' }
     ]
   },
 

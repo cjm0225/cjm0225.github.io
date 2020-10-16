@@ -6,6 +6,7 @@
           v-model="form.username"
           placeholder="请输入手机号/账号"
           @focus="clearValidate('username')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
@@ -16,6 +17,7 @@
           placeholder="请输入验证码"
           class="captchaInput"
           @focus="clearValidate('captcha')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
         <el-button class="captchaButton" @click="captchaSend">
@@ -28,6 +30,7 @@
           v-model="form.nickname"
           placeholder="请输入昵称"
           @focus="clearValidate('nickname')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
@@ -38,6 +41,7 @@
           v-model="form.password"
           placeholder="请输入密码"
           @focus="clearValidate('password')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
@@ -48,6 +52,7 @@
           v-model="form.anginPassword"
           placeholder="请再次输入密码"
           @focus="clearValidate('anginPassword')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
@@ -154,7 +159,9 @@ export default {
             data: data,
           })
             .then((response) => {
-              console.log(response);
+              this.$message.success("注册成功");
+              this.$store.commit("user/setUserInfo", response.data);
+              this.$router.push("/");
             })
             .catch((response) => {
               this.$message.error(response.response.data.message);

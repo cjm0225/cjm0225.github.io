@@ -6,6 +6,7 @@
           v-model="form.username"
           placeholder="请输入手机号/账号"
           @focus="clearValidate('username')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
@@ -16,11 +17,12 @@
           v-model="form.password"
           placeholder="请输入密码"
           @focus="clearValidate('password')"
+          @keyup.native.enter="submitForm"
         >
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm()"> 提交 </el-button>
+        <el-button type="primary" @click="submitForm"> 提交 </el-button>
         <el-button @click="resetForm()"> 重置 </el-button>
       </el-form-item>
     </el-form>
@@ -33,8 +35,8 @@ export default {
     return {
       showLogin: true,
       form: {
-        username: "13800138000",
-        password: "123456",
+        username: "",
+        password: "",
       },
       rules: {
         username: [
