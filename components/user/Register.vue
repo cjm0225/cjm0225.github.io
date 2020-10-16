@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="form" :rules="rules" ref="RegisterForm">
+    <el-form :model="form" status-icon :rules="rules" ref="RegisterForm">
       <el-form-item prop="username">
         <el-input
           v-model="form.username"
@@ -83,7 +83,6 @@ export default {
       }
     };
     return {
-      showLogin: true,
       form: {
         username: "",
         password: "",
