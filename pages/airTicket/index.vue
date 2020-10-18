@@ -155,16 +155,6 @@ export default {
           name: queryString,
         },
       }).then((response) => {
-        // 如果获取到的数据为空,那么就应该提示数据为空
-        if (response.data.data.length === 0) {
-          callback([
-            {
-              value: "无搜索结果",
-            },
-          ]);
-          return;
-        }
-
         // 获取数据成功之后, 因为自动补全组件必须要有value值才可以显示选项,要先改造数据
         // 有一些城市没有机场,需要把没有机场的城市过滤出来
         // 在机票接口中,数据要求城市名称格式为广州,要去掉市
@@ -179,6 +169,16 @@ export default {
             };
           });
 
+        // 如果获取到并处理过的数据为空,那么就应该提示数据为空
+        if (cityInfo.length === 0) {
+          callback([
+            {
+              value: "无搜索结果",
+            },
+          ]);
+          return;
+        }
+
         // 为了防止用户没有点击选项而触发不了选择处理函数的情况,优先将第一个城市的sort加入到表单中
         // 但是要区分是出发城市还是到达城市
         if (this.isdepartCityInput) {
@@ -186,7 +186,6 @@ export default {
         } else {
           this.form.destCode = cityInfo[0].sort;
         }
-
         // 改造完成之后,显示数据
         callback(cityInfo);
       });
@@ -251,7 +250,6 @@ export default {
         this.form.destCode,
         this.form.departCode,
       ];
-      console.log(this.form);
     },
   },
 };
