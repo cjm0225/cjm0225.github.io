@@ -52,9 +52,11 @@ export default {
 .header {
   display: flex;
   align-items: center;
-  padding: 0 200px;
-  line-height: 60px;
   height: 60px;
+  padding: 0 200px;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 4px 1px 6px 0px #888888;
+  line-height: 60px;
   img {
     cursor: pointer;
     margin-right: 10px;

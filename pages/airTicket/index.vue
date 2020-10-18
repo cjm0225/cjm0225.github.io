@@ -4,6 +4,7 @@
       <i class="iconfont icon-plane">&nbsp;国内机票</i>
     </div>
     <div class="airticket">
+      <!-- 机票左边部分 -->
       <div class="left">
         <div class="top">
           <div class="nav" :class="{ active: isSingle }">
@@ -14,6 +15,10 @@
           </div>
         </div>
         <div class="content">
+          <div class="swift" @click="switchCityName">
+            <div class="font">换</div>
+          </div>
+
           <el-form label-width="80px" :model="form">
             <el-form-item label="出发城市">
               <el-autocomplete
@@ -23,7 +28,8 @@
                 :trigger-on-focus="false"
                 :highlight-first-item="true"
                 @select="departCityInfo"
-                @focus="departCityInputFocus"
+                @focus="isdepartCityInput = true"
+                ref="autocomplete"
               ></el-autocomplete>
             </el-form-item>
 
@@ -35,7 +41,7 @@
                 :trigger-on-focus="false"
                 :highlight-first-item="true"
                 @select="destCityInfo"
-                @focus="destCityInputFocus"
+                @focus="isdepartCityInput = false"
               ></el-autocomplete>
             </el-form-item>
 
@@ -45,7 +51,9 @@
                 type="date"
                 placeholder="请选择出发时间"
                 value-format="yyyy-MM-dd"
+                :picker-options="pickerOptions"
               >
+                >
               </el-date-picker>
             </el-form-item>
 
@@ -57,11 +65,13 @@
           </el-form>
         </div>
       </div>
+      <!-- 机票右边部分 -->
       <div class="right">
         <img src="../../static/journey.jpg" />
       </div>
     </div>
 
+    <!-- 认证 -->
     <div class="description">
       <div class="item">
         <i class="iconfont icon-kujialeqiyezhan_qiandingxieyi"></i> 100%航协认证
@@ -70,11 +80,11 @@
       <div class="item"><i class="iconfont icon-dianhua"></i> 7X24小时服务</div>
     </div>
 
+    <!-- 特价机票部分 -->
     <div class="bottom">
       <div class="title">
         <i class="iconfont icon-tejiajipiao">&nbsp;特价机票</i>
       </div>
-
       <div class="showSaleTicket">
         <div
           class="SaleTicketItem"
@@ -100,6 +110,7 @@ export default {
     return {
       isSingle: true,
       saleTickets: [],
+      isdepartCityInput: true,
       form: {
         departCity: "",
         departCode: "",
@@ -107,7 +118,14 @@ export default {
         destCode: "",
         departDate: "",
       },
-      isdepartCityInput: true,
+      pickerOptions: {
+        // 禁用今天之前的时间,因为Date.now()包括了今天,所以要减一天的毫秒数
+        // time.getTime()可以将选择的时间转换为时间戳
+        // Date.now()是获取从1970年1月1日开始到现在的时间戳
+        disabledDate(time) {
+          return time.getTime() < Date.now() - 24 * 60 * 60 * 1000;
+        },
+      },
     };
   },
   created() {
@@ -126,13 +144,8 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         showCancelButton: false,
+        closeOnClickModal: false,
       });
-    },
-    departCityInputFocus() {
-      this.isdepartCityInput = true;
-    },
-    destCityInputFocus() {
-      this.isdepartCityInput = false;
     },
     queryHandler(queryString, callback) {
       // 在输入框输入的时候,进行城市信息获取
@@ -142,6 +155,16 @@ export default {
           name: queryString,
         },
       }).then((response) => {
+        // 如果获取到的数据为空,那么就应该提示数据为空
+        if (response.data.data.length === 0) {
+          callback([
+            {
+              value: "无搜索结果",
+            },
+          ]);
+          return;
+        }
+
         // 获取数据成功之后, 因为自动补全组件必须要有value值才可以显示选项,要先改造数据
         // 有一些城市没有机场,需要把没有机场的城市过滤出来
         // 在机票接口中,数据要求城市名称格式为广州,要去掉市
@@ -171,10 +194,20 @@ export default {
     departCityInfo(city) {
       // 需要额外增加一个参数
       this.form.departCode = city.sort;
+
+      // 处理选择没有数据的时候的显示信息
+      if (city.value === "无搜索结果") {
+        this.form.departCity = "";
+      }
     },
     destCityInfo(city) {
       // 需要额外增加一个参数
       this.form.destCode = city.sort;
+
+      // 处理选择没有数据的时候的显示信息
+      if (city.value === "无搜索结果") {
+        this.form.destCity = "";
+      }
     },
     toAirTicketPage() {
       if (this.form.departCity === "") {
@@ -197,12 +230,28 @@ export default {
     },
     SaleTicketHandler(SaleTicket) {
       // 由于API接口参数要求只需要五个,先处理数据再跳转
-      const { peice, cover, ...data } = SaleTicket;
+      const { cover, price, ...data } = SaleTicket;
       // 编程式路由导航
       this.$router.push({
         path: "airTicket/airTicketDetail",
         query: data,
       });
+    },
+    switchCityName() {
+      if (this.form.departCity === "" || this.form.destCity === "") {
+        this.$message.warning("请输入完整的出发和到达城市信息");
+        return;
+      }
+
+      [this.form.destCity, this.form.departCity] = [
+        this.form.departCity,
+        this.form.destCity,
+      ];
+      [this.form.departCode, this.form.destCode] = [
+        this.form.destCode,
+        this.form.departCode,
+      ];
+      console.log(this.form);
     },
   },
 };
@@ -242,10 +291,32 @@ export default {
         }
       }
       .content {
+        position: relative;
         padding: 15px 50px 0 20px;
         .el-date-editor,
         .el-autocomplete {
           width: 100%;
+        }
+        .swift {
+          position: absolute;
+          right: 20px;
+          top: 30px;
+          width: 30px;
+          height: 70px;
+          border: 1px solid #ccc;
+          border-left: 0;
+          .font {
+            cursor: pointer;
+            position: absolute;
+            right: -10px;
+            top: 23px;
+            width: 20px;
+            height: 20px;
+            background-color: #999999;
+            text-align: center;
+            color: #fff;
+            font-size: 14px;
+          }
         }
       }
     }

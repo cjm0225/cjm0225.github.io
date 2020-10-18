@@ -78,7 +78,10 @@ export default {
           })
             .then((response) => {
               if (response.status === 200) {
-                this.$message.success("登录成功");
+                this.$message.success({
+                  message: "登录成功",
+                  duration: 1500,
+                });
                 this.$store.commit("user/setUserInfo", response.data);
                 this.$router.push("/");
               }
