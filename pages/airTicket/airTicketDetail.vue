@@ -7,6 +7,7 @@
         <airTicketTop
           :airTicketInfo="airTicketInfo"
           v-if="Object.keys(airTicketInfo).length > 0"
+          @filterListhandler="filterListhandler"
         >
         </airTicketTop>
 
@@ -82,7 +83,7 @@
         </div>
 
         <!-- 无机票的时候显示的信息 -->
-        <div v-if="airTicketInfo.total === 0" class="noAirticket">
+        <div v-if="airTicketList.length === 0" class="noAirticket">
           无机票信息
         </div>
 
@@ -94,7 +95,7 @@
             :page-size="pageSize"
             :current-page="currentPage"
             :page-sizes="[2, 5, 10, 20]"
-            :total="airTicketInfo.total"
+            :total="total"
             @size-change="sizeChangeHandler"
             @current-change="currentPageChange"
           >
@@ -113,9 +114,11 @@ export default {
     return {
       airTicketInfo: {},
       airTicketList: [],
+      filterList: [],
       CommentShowIndex: null,
       pageSize: 10,
       currentPage: 1,
+      total: 0,
     };
   },
   components: {
@@ -155,16 +158,40 @@ export default {
         // 比较完了就输出最低价,将最低价加到数据中
         item.minimumPrice = minimumPrice;
       });
+      //将机票所有信心赋值给airTicketInfo
       this.airTicketInfo = response.data;
 
+      // 设置机票总数量
+      this.total = this.airTicketInfo.flights.length;
+
+      // 赋值给专门处理数据的数组
+      this.filterList = this.airTicketInfo.flights;
+
+      console.log(this.filterList);
       // 一开始进入页面的时候也需要对数据处理,因为数量显示要正确
-      this.airTicketList = this.airTicketInfo.flights.slice(
+      this.airTicketList = this.filterList.slice(
         this.currentPage - 1,
         this.pageSize
       );
     });
   },
   methods: {
+    filterListhandler(filterList) {
+      //将处理后的机票数据赋值给需要遍历的数组
+      this.filterList = filterList;
+
+      // 设置总机票数量
+      this.total = this.filterList.length;
+
+      // 每次处理数据之后,都要将分页组件的设置设为原始值
+      this.currentPage = 1;
+
+      // 然后正确显示机票,相当于第一次进入页面,因为当前页码是从1开始的,所以要减1
+      this.airTicketList = this.filterList.slice(
+        this.currentPage - 1,
+        this.pageSize
+      );
+    },
     CommentShowHandler(index) {
       if (this.CommentShowIndex === index) {
         this.CommentShowIndex = null;
@@ -177,7 +204,7 @@ export default {
       this.pageSize = newPageSize;
       // 每页显示数量改变时,需要对数据进行处理,显示机票数量变成与newPageSize数量一样
       // 因为当前页码是从1开始的,所以要减1
-      this.airTicketList = this.airTicketInfo.flights.slice(
+      this.airTicketList = this.filterList.slice(
         this.currentPage - 1,
         this.pageSize
       );
@@ -189,11 +216,10 @@ export default {
       // 0 1 2 3  4 5  6 7 8 9
       // 规律:slice开始是 this.currentPage * this.pageSize - this.pageSize
       // 结束时this.currentPage * this.pageSize(不包含)
-      this.airTicketList = this.airTicketInfo.flights.slice(
+      this.airTicketList = this.filterList.slice(
         this.currentPage * this.pageSize - this.pageSize,
         this.currentPage * this.pageSize
       );
-
       // 因为显示隐藏推荐机票的时候,在换页的时候会自动显示之前点击过的推荐机票,所以要清空
       this.CommentShowIndex = null;
     },
