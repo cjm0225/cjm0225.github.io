@@ -72,7 +72,12 @@
                   <div class="price">¥{{ seat.settle_price }}</div>
                   <div class="choose">
                     <div>
-                      <el-button type="warning" size="mini">选定</el-button>
+                      <el-button
+                        type="warning"
+                        size="mini"
+                        @click="toOrderpage(seat.seat_xid)"
+                        >选定</el-button
+                      >
                     </div>
                     <div class="left">剩余 : {{ seat.discount }}</div>
                   </div>
@@ -161,6 +166,9 @@ export default {
     },
   },
   methods: {
+    toOrderpage(id) {
+      console.log(id);
+    },
     historyHandler(history) {
       //  编程式路由导航,不加path,只加query,可以实现在所在页面改变路由参数
       // 在 2.2.0+，可选的在 router.push 或 router.replace 中提供 onComplete 和 onAbort 回调作为第二个和第三个参数。
@@ -191,13 +199,14 @@ export default {
           // 比较完了就输出最低价,将最低价加到数据中
           item.minimumPrice = minimumPrice;
         });
+
         //将机票所有信心赋值给airTicketInfo
         this.airTicketInfo = response.data;
 
         // 设置机票总数量
         this.total = this.airTicketInfo.flights.length;
 
-        // 赋值给专门处理数据的数组
+        // 将机票信息赋值给专门处理数据的数组
         this.filterList = this.airTicketInfo.flights;
 
         // 一开始进入页面的时候也需要对数据处理,因为数量显示要正确
@@ -205,7 +214,6 @@ export default {
           this.currentPage - 1,
           this.pageSize
         );
-        console.log(this.filterList);
       });
     },
     filterListhandler(filterList) {
@@ -215,7 +223,7 @@ export default {
       // 设置总机票数量
       this.total = this.filterList.length;
 
-      // 每次处理数据之后,都要将分页组件的设置设为原始值
+      // 每次处理数据之后,都要将分页组件的设置所在页码设为原始值
       this.currentPage = 1;
 
       // 然后正确显示机票,相当于第一次进入页面,因为当前页码是从1开始的,所以要减1
@@ -225,11 +233,13 @@ export default {
       );
     },
     reCommentShowHandler(index) {
+      // 如果已经展开,再次点击就关闭
       if (this.reCommentShowIndex === index) {
         this.reCommentShowIndex = null;
         return;
       }
 
+      // 记录这一次被点击的下标,并展开
       this.reCommentShowIndex = index;
     },
     sizeChangeHandler(newPageSize) {

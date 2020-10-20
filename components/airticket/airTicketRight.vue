@@ -22,17 +22,24 @@
     <!-- 历史查询 -->
     <div class="bottom">
       <div class="title">历史查询</div>
-      <div class="history" v-for="(history, index) of historyList" :key="index">
-        <div class="left">
-          <div class="city">
-            {{ history.departCity }} - {{ history.destCity }}
+      <div class="wrapper" v-if="historyList.length > 0">
+        <div
+          class="history"
+          v-for="(history, index) of historyList"
+          :key="index"
+        >
+          <div class="left">
+            <div class="city">
+              {{ history.departCity }} - {{ history.destCity }}
+            </div>
+            <div>{{ history.departDate }}</div>
           </div>
-          <div>{{ history.departDate }}</div>
-        </div>
-        <div class="right">
-          <button class="btn" @click="historyHandler(history)">选择</button>
+          <div class="right">
+            <button class="btn" @click="historyHandler(history)">选择</button>
+          </div>
         </div>
       </div>
+      <div class="noHistory" v-else>暂无历史记录</div>
     </div>
   </div>
 </template>
@@ -92,31 +99,36 @@ export default {
     border-bottom: 1px solid #cccccc;
     padding-bottom: 10px;
   }
-  .history {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    .left {
-      font-size: 12px;
-      text-align: center;
-      .city {
-        font-size: 16px;
-      }
-    }
-    .right {
-      .btn {
-        background-color: #ffa500;
-        outline: none;
-        border: none;
-        border-radius: 5px;
-        padding: 0 10px;
-        line-height: 24px;
+  .wrapper {
+    .history {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      .left {
         font-size: 12px;
-        color: #fff;
-        cursor: pointer;
+        text-align: center;
+        .city {
+          font-size: 16px;
+        }
+      }
+      .right {
+        .btn {
+          background-color: #ffa500;
+          outline: none;
+          border: none;
+          border-radius: 5px;
+          padding: 0 10px;
+          line-height: 24px;
+          font-size: 12px;
+          color: #fff;
+          cursor: pointer;
+        }
       }
     }
+  }
+  .noHistory {
+    font-size: 14px;
   }
 }
 </style>

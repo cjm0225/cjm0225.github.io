@@ -1,5 +1,10 @@
 <template>
-  <div class="center">
+  <div
+    class="center"
+    :style="{
+      background: 'url(http://157.122.54.189:9095/assets/images/th03.jfif)',
+    }"
+  >
     <div class="page">
       <div class="top">
         <div class="nav" :class="{ active: showLogin }" @click="Login()">
@@ -50,7 +55,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url("http://127.0.0.1:1337/assets/images/th03.jfif");
+  // background-image: url("http://127.0.0.1:1337/assets/images/th03.jfif");
   height: 752px;
 
   .page {

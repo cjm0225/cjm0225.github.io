@@ -74,7 +74,12 @@ export default {
         height: 60px;
       }
     }
-    .nuxt-link-exact-active {
+    // 激活的nuxt-link类名nuxt-link-exact-active是正在激活的nuxt-link
+    // nuxt-link-active是所有url符合的nuxt-link
+    // /是一直被激活的,nuxt-link-active类名一直都有,我们可以将第一个/去除
+    // nuxt-link-active:not(:nth-child(1))不是第一个
+    .nuxt-link-exact-active,
+    .nuxt-link-active:not(:nth-child(1)) {
       background-color: #409eff;
       color: #fff;
     }
