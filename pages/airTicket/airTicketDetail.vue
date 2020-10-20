@@ -24,7 +24,7 @@
           v-for="(airTicket, index) of airTicketList"
           :key="airTicket.id"
         >
-          <div class="description" @click="CommentShowHandler(index)">
+          <div class="description" @click="reCommentShowHandler(index)">
             <div class="airport">
               {{ airTicket.airline_name }}{{ airTicket.flight_no }}
             </div>
@@ -57,11 +57,11 @@
             </div>
           </div>
           <transition name="slide-fade">
-            <div class="comment" v-if="CommentShowIndex === index">
-              <div class="commentLeft">低价推荐</div>
-              <div class="commentRight">
+            <div class="recomment" v-if="reCommentShowIndex === index">
+              <div class="recommentLeft">低价推荐</div>
+              <div class="recommentRight">
                 <div
-                  class="commentItem"
+                  class="recommentItem"
                   v-for="(seat, index) of airTicket.seat_infos"
                   :key="index"
                 >
@@ -102,27 +102,39 @@
           </el-pagination>
         </div>
       </div>
-      <div class="detailRight">1111</div>
+      <div class="detailRight">
+        <airTicketRight @historyHandler="historyHandler"></airTicketRight>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import airTicketTop from "@/components/airticket/airTicketTop";
+import airTicketRight from "@/components/airticket/airTicketRight";
 export default {
   data() {
     return {
+      // 包含所有信息
       airTicketInfo: {},
+      // 专门用于显示的数组
       airTicketList: [],
+      // 专门用于处理的数组
       filterList: [],
-      CommentShowIndex: null,
+      // 推荐机票被打开的小白哦
+      reCommentShowIndex: null,
+      // 分页组件默认值
       pageSize: 10,
       currentPage: 1,
+      // 因为机票总数量会随着时机不同而不同,所以要手动设置一个变量,储存不同时机的机票总数量
       total: 0,
+      // 保存路由参数
+      queryList: {},
     };
   },
   components: {
     airTicketTop,
+    airTicketRight,
   },
   filters: {
     durationTime(Oldvalue) {
@@ -140,42 +152,62 @@ export default {
       return hour + "小时" + minute + "分";
     },
   },
-  created() {
-    this.$axios({
-      url: "airs",
-      params: this.$route.query,
-    }).then((response) => {
-      // 遍历机票信息
-      response.data.flights.forEach((item) => {
-        // 将第一个价格设置为最低价
-        let minimumPrice = item.seat_infos[0].org_settle_price;
-        // 遍历所有机票价格进行比较
-        item.seat_infos.forEach((item) => {
-          if (item.org_settle_price < minimumPrice) {
-            minimumPrice = item.org_settle_price;
-          }
-        });
-        // 比较完了就输出最低价,将最低价加到数据中
-        item.minimumPrice = minimumPrice;
-      });
-      //将机票所有信心赋值给airTicketInfo
-      this.airTicketInfo = response.data;
-
-      // 设置机票总数量
-      this.total = this.airTicketInfo.flights.length;
-
-      // 赋值给专门处理数据的数组
-      this.filterList = this.airTicketInfo.flights;
-
-      console.log(this.filterList);
-      // 一开始进入页面的时候也需要对数据处理,因为数量显示要正确
-      this.airTicketList = this.filterList.slice(
-        this.currentPage - 1,
-        this.pageSize
-      );
-    });
+  watch: {
+    queryList: {
+      immediate: true,
+      handler: function () {
+        this.loadPage();
+      },
+    },
   },
   methods: {
+    historyHandler(history) {
+      //  编程式路由导航,不加path,只加query,可以实现在所在页面改变路由参数
+      // 在 2.2.0+，可选的在 router.push 或 router.replace 中提供 onComplete 和 onAbort 回调作为第二个和第三个参数。
+      this.$router.push(
+        {
+          query: history,
+        },
+        () => {
+          this.queryList = this.$route.query;
+        }
+      );
+    },
+    loadPage() {
+      this.$axios({
+        url: "airs",
+        params: this.$route.query,
+      }).then((response) => {
+        // 遍历机票信息
+        response.data.flights.forEach((item) => {
+          // 将第一个价格设置为最低价
+          let minimumPrice = item.seat_infos[0].org_settle_price;
+          // 遍历所有机票价格进行比较
+          item.seat_infos.forEach((item) => {
+            if (item.org_settle_price < minimumPrice) {
+              minimumPrice = item.org_settle_price;
+            }
+          });
+          // 比较完了就输出最低价,将最低价加到数据中
+          item.minimumPrice = minimumPrice;
+        });
+        //将机票所有信心赋值给airTicketInfo
+        this.airTicketInfo = response.data;
+
+        // 设置机票总数量
+        this.total = this.airTicketInfo.flights.length;
+
+        // 赋值给专门处理数据的数组
+        this.filterList = this.airTicketInfo.flights;
+
+        // 一开始进入页面的时候也需要对数据处理,因为数量显示要正确
+        this.airTicketList = this.filterList.slice(
+          this.currentPage - 1,
+          this.pageSize
+        );
+        console.log(this.filterList);
+      });
+    },
     filterListhandler(filterList) {
       //将处理后的机票数据赋值给需要遍历的数组
       this.filterList = filterList;
@@ -192,13 +224,13 @@ export default {
         this.pageSize
       );
     },
-    CommentShowHandler(index) {
-      if (this.CommentShowIndex === index) {
-        this.CommentShowIndex = null;
+    reCommentShowHandler(index) {
+      if (this.reCommentShowIndex === index) {
+        this.reCommentShowIndex = null;
         return;
       }
 
-      this.CommentShowIndex = index;
+      this.reCommentShowIndex = index;
     },
     sizeChangeHandler(newPageSize) {
       this.pageSize = newPageSize;
@@ -221,7 +253,7 @@ export default {
         this.currentPage * this.pageSize
       );
       // 因为显示隐藏推荐机票的时候,在换页的时候会自动显示之前点击过的推荐机票,所以要清空
-      this.CommentShowIndex = null;
+      this.reCommentShowIndex = null;
     },
   },
 };
@@ -248,7 +280,7 @@ export default {
     display: flex;
 
     .detailLeft {
-      flex: 11;
+      flex: 12;
       .title {
         display: flex;
         margin-top: 20px;
@@ -312,22 +344,22 @@ export default {
             }
           }
         }
-        .comment {
+        .recomment {
           background-color: #f6f6f6;
           border: 1px solid #dddddd;
           border-top: 0;
           display: flex;
-          .commentLeft {
+          .recommentLeft {
             flex: 2;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 14px;
           }
-          .commentRight {
+          .recommentRight {
             flex: 12;
 
-            .commentItem {
+            .recommentItem {
               display: flex;
               justify-content: center;
               align-items: center;
@@ -367,11 +399,10 @@ export default {
       }
     }
     .detailRight {
-      flex: 3;
+      flex: 4;
     }
   }
   .detailRight {
-    border: 1px solid #ccc;
     margin-left: 15px;
   }
 }

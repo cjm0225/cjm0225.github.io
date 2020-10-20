@@ -1,7 +1,11 @@
 <template>
   <div>
     <div class="top">
-      <span> 单程： 广州 - 上海 / 2020-10-18</span>
+      <span v-if="airTicketInfo.info">
+        单程： {{ airTicketInfo.info.departCity }} -
+        {{ airTicketInfo.info.destCity }} /
+        {{ airTicketInfo.info.departDate }}</span
+      >
       <div class="filter">
         <!-- 起飞机场 -->
         <el-select

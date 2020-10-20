@@ -226,6 +226,17 @@ export default {
         path: "airTicket/airTicketDetail",
         query: this.form,
       });
+
+      // 点击搜索的时候,通知vuex改变数据
+      const isExist = this.$store.state.history.history.find((item) => {
+        return (
+          item.departCity === this.$route.query.departCity &&
+          item.destCity === this.$route.query.destCity
+        );
+      });
+      if (!isExist) {
+        this.$store.commit("history/addHistory", this.form);
+      }
     },
     SaleTicketHandler(SaleTicket) {
       // 由于API接口参数要求只需要五个,先处理数据再跳转
